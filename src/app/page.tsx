@@ -134,11 +134,11 @@ export default function Home() {
       <header className="topbar">
         <a className="brand" href="#home" aria-label="Wordwell home">
           <span className="brand-mark">w.</span>
-          <span>wordwell</span>
+          <span>Wordwell</span>
         </a>
         <div className="topbar-right">
           <span className="daily-note"><span className="status-dot" /> A good day to learn a word</span>
-          <a className="source-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">Oxford 3000 / 5000 <span aria-hidden="true">↗</span></a>
+          {/* <a className="source-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">Oxford 3000 / 5000 <span aria-hidden="true">↗</span></a> */}
         </div>
       </header>
 
@@ -207,7 +207,7 @@ export default function Home() {
                   <span className="word-display">{current.word}</span>
                   <span className="word-meta"><i /> {current.part} <span className="pronunciation">{current.pronunciation}</span></span>
                   <span className="card-bottomline"><span>Take a guess, then turn the card</span><span className="turn-icon" aria-hidden="true">↻</span></span>
-                  <span className="card-ornament" aria-hidden="true">✳</span>
+                  <span className="card-ornament" aria-hidden="true"></span>
                 </button>
                 <button className="card-face card-back" onClick={() => setFlipped(false)} aria-label={`Hide meaning of ${current.word}`}>
                   <span className="card-topline"><span>THE MEANING</span><span className={`level-tag level-${current.level.toLowerCase()}`}>{current.level}</span></span>
