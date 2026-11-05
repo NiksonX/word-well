@@ -80,8 +80,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .progress-track { height: 3px; margin-top: 9px; border-radius: 4px; background: #e2e5df; overflow: hidden; }
 .progress-track i { display: block; height: 100%; border-radius: inherit; background: var(--coral); transition: width 250ms ease; }
 .card-stage { position: relative; width: min(100%, 540px); height: clamp(350px, 49vh, 470px); perspective: 1300px; animation: card-arrive 650ms cubic-bezier(.2,.7,.25,1) both; }
-.card-shadow { position: absolute; inset: 12px 0 -7px; border-radius: 8px; }
-.card-shadow-back { background: #e5e8df; transform: rotate(1.7deg); }
+.card-shadow { position: absolute; inset: 0; border-radius: 7px; }
+.card-shadow-back { background: #e5e8df; box-shadow: 0 8px 0 #e5e8df; }
 .flashcard { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 650ms cubic-bezier(.2,.7,.25,1); }
 .flashcard.is-flipped { transform: rotateY(180deg); }
 .card-face { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: stretch; padding: clamp(24px, 4vw, 42px); overflow: hidden; border: 1px solid #dfe4dc; border-radius: 7px; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: left; cursor: pointer; }
