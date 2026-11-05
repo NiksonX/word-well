@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useEffectEvent, useState, useSyncExternalStore } from "react";
+import { useEffect, useEffectEvent, useRef, useState, useSyncExternalStore } from "react";
+import type { TouchEvent as ReactTouchEvent } from "react";
 
 type Word = {
   word: string;
@@ -64,6 +65,7 @@ export default function Home() {
   const savedSnapshot = useSyncExternalStore(subscribeToSavedWords, getSavedWordsSnapshot, getServerSavedWordsSnapshot);
   const saved = JSON.parse(savedSnapshot) as string[];
   const [showSaved, setShowSaved] = useState(false);
+  const touchStartX = useRef<number | null>(null);
 
   const deck = words.filter((item) => {
     const matchesLevel = level === "All" || item.level === level;
@@ -86,6 +88,23 @@ export default function Home() {
       : [...saved, word];
     window.localStorage.setItem(savedWordsKey, JSON.stringify(next));
     window.dispatchEvent(new Event(savedWordsEvent));
+  }
+
+  function handleTouchStart(event: ReactTouchEvent<HTMLDivElement>) {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+  }
+
+  function handleTouchEnd(event: ReactTouchEvent<HTMLDivElement>) {
+    const startX = touchStartX.current;
+    const endX = event.changedTouches[0]?.clientX;
+    touchStartX.current = null;
+    if (startX === null || endX === undefined) return;
+
+    const distance = endX - startX;
+    if (Math.abs(distance) < 48) return;
+
+    event.preventDefault();
+    moveCard(distance < 0 ? 1 : -1);
   }
 
   const handleKeyDown = useEffectEvent((event: KeyboardEvent) => {
@@ -179,7 +198,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="card-stage">
+          <div className="card-stage" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             <div className="card-shadow card-shadow-back" />
             <div className={`flashcard ${flipped ? "is-flipped" : ""}`}>
               {current ? <>
@@ -208,7 +227,8 @@ export default function Home() {
             <button className="icon-button" onClick={() => moveCard(1)} aria-label="Next word" title="Next word (right arrow)"><span aria-hidden="true">→</span></button>
           </div>
 
-          <div className="keyboard-hint"><span>←</span><span>→</span> browse <b>·</b> <span>↑</span><span>↓</span> flip <b>·</b> <kbd>space</kbd> flip</div>
+          <div className="keyboard-hint desktop-hint"><span>←</span><span>→</span> browse <b>·</b> <span>↑</span><span>↓</span> flip <b>·</b> <kbd>space</kbd> flip</div>
+          <div className="keyboard-hint mobile-hint">Swipe to browse <b>·</b> Tap a card to flip</div>
         </section>
       </section>
       <footer className="page-footer"><span>ONE WORD AT A TIME</span><span>Built for curious minds <i>✳</i></span></footer>

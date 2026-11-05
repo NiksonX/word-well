@@ -114,6 +114,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .reveal-button span { font-size: 14px; }
 .reveal-button:disabled, .save-button:disabled { opacity: .45; cursor: not-allowed; }
 .keyboard-hint { display: flex; align-items: center; gap: 6px; margin-top: 22px; color: #939b93; font-size: 9px; }
+.mobile-hint { display: none; }
 .keyboard-hint > span { width: 17px; height: 17px; display: grid; place-items: center; border: 1px solid #e0e3dd; border-radius: 3px; background: rgba(250, 250, 247, .8); color: #68756c; font-size: 11px; }
 .keyboard-hint b { margin: 0 5px; color: #b0b6af; font-weight: 400; }
 .page-footer { min-height: 46px; display: flex; align-items: center; justify-content: space-between; padding: 0 clamp(22px, 5vw, 76px); border-top: 1px solid var(--line); background: rgba(250, 250, 246, .8); color: #9aa19a; font-size: 8px; font-weight: 700; letter-spacing: 1.1px; }
@@ -124,7 +125,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 @media (max-width: 760px) {
   .topbar { height: 62px; }
   .daily-note { display: none; }
-  .workspace { grid-template-columns: 1fr; gap: 27px; padding-top: 30px; }
+  .workspace { grid-template-columns: 1fr; gap: 27px; padding: 30px 16px 28px; }
   .deck-sidebar { min-height: 0; order: 2; border-right: 0; padding: 22px 0 0; border-top: 1px solid var(--line); }
   .sidebar-heading { margin-bottom: 16px; }
   .word-list { max-height: 210px; }
@@ -133,7 +134,12 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .study-heading .eyebrow { font-size: 8px; }
   .study-heading h2 { font-size: clamp(26px, 7vw, 35px); }
   .progress-wrap { min-width: 72px; }
-  .card-stage { height: clamp(345px, 57vh, 440px); }
+  .card-stage { height: clamp(340px, 55svh, 430px); touch-action: pan-y; }
+  .study-controls { width: min(100%, 340px); gap: 8px; }
+  .icon-button, .save-button { width: 44px; height: 44px; flex: 0 0 44px; }
+  .reveal-button { min-width: 0; height: 48px; flex: 1; }
+  .desktop-hint { display: none; }
+  .mobile-hint { display: flex; justify-content: center; font-size: 11px; }
   .page-footer { min-height: 42px; }
 }
 
@@ -142,14 +148,28 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .workspace { padding: 26px 17px 28px; }
   .source-link { font-size: 10px; }
   .card-face { padding: 23px; }
-  .word-display { font-size: 58px; }
+  .word-display { font-size: 48px; }
   .meaning-text { font-size: 23px; }
   .example-block { font-size: 14px; }
   .study-controls { gap: 10px; }
-  .reveal-button { min-width: 140px; padding: 0 12px; }
+  .reveal-button { min-width: 0; padding: 0 12px; }
   .keyboard-hint { gap: 4px; font-size: 8px; }
   .keyboard-hint b { margin: 0 3px; }
   .page-footer { padding: 0 17px; }
+}
+
+@media (max-width: 360px) {
+  .word-display { font-size: 40px; }
+}
+
+@media (min-width: 761px) and (max-height: 850px) {
+  .workspace { padding-top: 28px; padding-bottom: 18px; }
+  .deck-sidebar { min-height: 0; }
+  .word-list { max-height: min(280px, calc(100svh - 500px)); }
+  .study-heading { margin-top: 0; margin-bottom: 20px; }
+  .card-stage { height: clamp(300px, calc(100svh - 440px), 390px); }
+  .study-controls { margin-top: 18px; }
+  .keyboard-hint { margin-top: 14px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
