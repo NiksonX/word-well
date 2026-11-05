@@ -179,11 +179,11 @@ export default function Home() {
             {!deck.length && <p className="empty-list">No words found. Try another level or search.</p>}
           </nav>
 
-          <a className="oxford-card-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">
+          {/* <a className="oxford-card-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">
             <span className="oxford-link-mark">O</span>
             <span><strong>Explore the full list</strong><small>Oxford Learner&apos;s Dictionaries</small></span>
             <span className="link-arrow" aria-hidden="true">↗</span>
-          </a>
+          </a> */}
         </aside>
 
         <section className="study-area" aria-label="Flashcard study area">
@@ -231,7 +231,7 @@ export default function Home() {
           <div className="keyboard-hint mobile-hint">Swipe to browse <b>·</b> Tap a card to flip</div>
         </section>
       </section>
-      <footer className="page-footer"><span>ONE WORD AT A TIME</span><span>Built for curious minds <i>✳</i></span></footer>
+      <footer className="page-footer"><span>ONE WORD AT A TIME</span><span>Built for curious minds <i></i></span></footer>
     </main>
   );
 }
