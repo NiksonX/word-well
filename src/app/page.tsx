@@ -131,10 +131,14 @@ export default function Home() {
   const currentIndex = deck.length ? index % deck.length : 0;
   const current = deck[currentIndex];
 
+  function flipCard(showMeaning: boolean) {
+    setFlipped(showMeaning);
+  }
+
   function moveCard(direction: -1 | 1) {
     if (!deck.length) return;
     setIndex((currentIndex) => (currentIndex + direction + deck.length) % deck.length);
-    setFlipped(false);
+    flipCard(false);
   }
 
   function toggleSaved(word: string) {
@@ -172,7 +176,7 @@ export default function Home() {
       moveCard(1);
     } else if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.code === "Space") {
       event.preventDefault();
-      setFlipped((isFlipped) => !isFlipped);
+      flipCard(!flipped);
     }
   });
 
@@ -193,6 +197,21 @@ export default function Home() {
         </a>
         <div className="topbar-right">
           <span className="daily-note"><span className="status-dot" /> A good day to learn a word</span>
+          <div className="language-toggle" role="group" aria-label="Meaning language">
+            {(["en", "uk", "de"] as const).map((language) => (
+              <button
+                key={language}
+                type="button"
+                lang={language}
+                aria-label={`Show meaning in ${meaningLanguageNames[language]}`}
+                aria-pressed={meaningLanguage === language}
+                title={`Show meaning in ${meaningLanguageNames[language]}`}
+                onClick={() => setMeaningLanguage(language)}
+              >
+                {language.toUpperCase()}
+              </button>
+            ))}
+          </div>
           {/* <a className="source-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">Oxford 3000 / 5000 <span aria-hidden="true">↗</span></a> */}
         </div>
       </header>
@@ -257,14 +276,14 @@ export default function Home() {
             <div className="card-shadow card-shadow-back" />
             <div className={`flashcard ${flipped ? "is-flipped" : ""}`}>
               {current ? <>
-                <button className="card-face card-front" onClick={() => setFlipped(true)} aria-label={`Reveal meaning of ${current.word}`}>
+                <button className="card-face card-front" onClick={() => flipCard(true)} aria-label={`Reveal meaning of ${current.word}`}>
                   <span className="card-topline"><span>WORD NO. {String(words.indexOf(current) + 1).padStart(2, "0")}</span><span className={`level-tag level-${current.level.toLowerCase()}`}>{current.level}</span></span>
                   <span className="word-display">{current.word}</span>
                   <span className="word-meta"><i /> {current.part} <span className="pronunciation">{current.pronunciation}</span></span>
                   <span className="card-bottomline"><span>Take a guess, then turn the card</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                   <span className="card-ornament" aria-hidden="true"></span>
                 </button>
-                <button className="card-face card-back" onClick={() => setFlipped(false)} aria-label={`Hide meaning of ${current.word}`}>
+                <button className="card-face card-back" onClick={() => flipCard(false)} aria-label={`Hide meaning of ${current.word}`}>
                   <span className="card-topline"><span>THE MEANING</span><span className={`level-tag level-${current.level.toLowerCase()}`}>{current.level}</span></span>
                   <span className="meaning-label">{current.word}</span>
                   <span className="meaning-text" lang={meaningLanguage}>
@@ -279,29 +298,12 @@ export default function Home() {
                 </button>
               </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); }}>Back to the deck</button></div>}
             </div>
-            {flipped && current && (
-              <div className="language-toggle" role="group" aria-label="Meaning language">
-                {(["en", "uk", "de"] as const).map((language) => (
-                  <button
-                    key={language}
-                    type="button"
-                    lang={language}
-                    aria-label={`Show meaning in ${meaningLanguageNames[language]}`}
-                    aria-pressed={meaningLanguage === language}
-                    title={`Show meaning in ${meaningLanguageNames[language]}`}
-                    onClick={() => setMeaningLanguage(language)}
-                  >
-                    {language.toUpperCase()}
-                  </button>
-                ))}
-              </div>
-            )}
           </div>
 
           <div className="study-controls">
             <button className="icon-button" onClick={() => moveCard(-1)} aria-label="Previous word" title="Previous word (left arrow)"><span aria-hidden="true">←</span></button>
             <button className={`save-button ${current && saved.includes(current.word) ? "is-saved" : ""}`} onClick={() => current && toggleSaved(current.word)} disabled={!current} aria-label={current && saved.includes(current.word) ? "Remove saved word" : "Save word"} title="Save word"><span aria-hidden="true">{current && saved.includes(current.word) ? "★" : "☆"}</span></button>
-            <button className="reveal-button" onClick={() => current && setFlipped((value) => !value)} disabled={!current}>{flipped ? "Show word" : "Reveal meaning"}<span aria-hidden="true">↗</span></button>
+            <button className="reveal-button" onClick={() => current && flipCard(!flipped)} disabled={!current}>{flipped ? "Show word" : "Reveal meaning"}<span aria-hidden="true">↗</span></button>
             <button className="icon-button" onClick={() => moveCard(1)} aria-label="Next word" title="Next word (right arrow)"><span aria-hidden="true">→</span></button>
           </div>
 

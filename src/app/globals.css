@@ -88,8 +88,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .card-face { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: stretch; padding: clamp(24px, 4vw, 42px); overflow: hidden; border: 1px solid #dfe4dc; border-radius: 7px; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: left; cursor: pointer; }
 .card-front { background: #fffef9; }
 .card-back { transform: rotateY(180deg); background: #e7eee6; }
-.language-toggle { position: absolute; z-index: 2; top: clamp(23px, 4vw, 42px); right: clamp(70px, 8vw, 88px); display: flex; gap: 1px; padding: 2px; border: 1px solid #cbd7ce; border-radius: 4px; background: #f7f8f3; }
-.language-toggle button { min-width: 27px; height: 20px; padding: 0 5px; border: 0; border-radius: 2px; background: transparent; color: #78877d; font-size: 9px; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; }
+.language-toggle { display: flex; flex: 0 0 auto; gap: 1px; padding: 3px; border: 1px solid #cbd7ce; border-radius: 4px; background: #f7f8f3; }
+.language-toggle button { min-width: 30px; height: 26px; padding: 0 6px; border: 0; border-radius: 2px; background: transparent; color: #78877d; font-size: 10px; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; }
 .language-toggle button[aria-pressed="true"] { background: var(--green); color: #fffef7; }
 .language-toggle button:not([aria-pressed="true"]):hover { background: #e7eee6; color: var(--green); }
 .card-topline, .card-bottomline { display: flex; align-items: center; justify-content: space-between; color: #89938a; font-size: 9px; font-weight: 700; letter-spacing: 1.1px; }
@@ -153,7 +153,6 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .workspace { padding: 26px 17px 28px; }
   .source-link { font-size: 10px; }
   .card-face { padding: 23px; }
-  .language-toggle { top: 23px; right: 68px; }
   .word-display { font-size: 48px; }
   .meaning-text { font-size: 23px; }
   .example-block { font-size: 14px; }
