@@ -12,28 +12,82 @@ type Word = {
   example: string;
 };
 
+type MeaningLanguage = "en" | "uk" | "de";
+
 const words: Word[] = [
-  { word: "curious", level: "A2", part: "adjective", pronunciation: "/ˈkjʊəriəs/", meaning: "Wanting to know or learn about something.", example: "The curious student stayed after class to ask one more question." },
-  { word: "achieve", level: "A2", part: "verb", pronunciation: "/əˈtʃiːv/", meaning: "To succeed in doing or reaching something through effort.", example: "A little practice each day can help you achieve your goal." },
-  { word: "reliable", level: "B1", part: "adjective", pronunciation: "/rɪˈlaɪəbl/", meaning: "That you can trust or depend on.", example: "We need a reliable source before we share the information." },
-  { word: "notice", level: "A2", part: "verb", pronunciation: "/ˈnəʊtɪs/", meaning: "To see or become aware of something.", example: "Did you notice how the final paragraph changes the tone?" },
-  { word: "approach", level: "B2", part: "noun", pronunciation: "/əˈprəʊtʃ/", meaning: "A way of dealing with a person or situation.", example: "Her calm approach made the difficult conversation easier." },
-  { word: "benefit", level: "B1", part: "noun", pronunciation: "/ˈbenɪfɪt/", meaning: "An advantage or helpful result.", example: "One benefit of reading widely is a stronger vocabulary." },
-  { word: "gather", level: "B1", part: "verb", pronunciation: "/ˈɡæðə(r)/", meaning: "To bring things together or collect information.", example: "The researchers gathered responses from local residents." },
-  { word: "ordinary", level: "A2", part: "adjective", pronunciation: "/ˈɔːdnri/", meaning: "Normal or not especially different.", example: "It was an ordinary morning until the phone rang." },
-  { word: "aware", level: "B1", part: "adjective", pronunciation: "/əˈweə(r)/", meaning: "Knowing that something exists or is happening.", example: "Are you aware of the new library opening hours?" },
-  { word: "efficient", level: "B2", part: "adjective", pronunciation: "/ɪˈfɪʃnt/", meaning: "Working well without wasting time or resources.", example: "A clear plan is an efficient way to begin the project." },
-  { word: "journey", level: "A1", part: "noun", pronunciation: "/ˈdʒɜːni/", meaning: "The act of travelling from one place to another.", example: "The train journey through the hills took two hours." },
-  { word: "improve", level: "A1", part: "verb", pronunciation: "/ɪmˈpruːv/", meaning: "To become better, or to make something better.", example: "She listens to podcasts to improve her English." },
-  { word: "consider", level: "A2", part: "verb", pronunciation: "/kənˈsɪdə(r)/", meaning: "To think carefully about something before deciding.", example: "We should consider every option before we choose." },
-  { word: "evidence", level: "A2", part: "noun", pronunciation: "/ˈevɪdəns/", meaning: "Facts or information that show whether something is true.", example: "The report includes evidence from several studies." },
-  { word: "maintain", level: "B2", part: "verb", pronunciation: "/meɪnˈteɪn/", meaning: "To keep something at the same level or in good condition.", example: "It takes effort to maintain a healthy work-life balance." },
-  { word: "generous", level: "B1", part: "adjective", pronunciation: "/ˈdʒenərəs/", meaning: "Willing to give or share more than is expected.", example: "It was generous of him to offer us a place to stay." },
-  { word: "environment", level: "A2", part: "noun", pronunciation: "/ɪnˈvaɪrənmənt/", meaning: "The natural world, or the conditions around someone.", example: "Small choices can have an impact on the environment." },
-  { word: "significant", level: "B2", part: "adjective", pronunciation: "/sɪɡˈnɪfɪkənt/", meaning: "Large or important enough to be noticed.", example: "The study found a significant change in reading habits." },
-  { word: "support", level: "A2", part: "verb", pronunciation: "/səˈpɔːt/", meaning: "To help or encourage someone or something.", example: "Good feedback can support learners as they grow." },
-  { word: "opportunity", level: "A2", part: "noun", pronunciation: "/ˌɒpəˈtjuːnəti/", meaning: "A situation that makes it possible to do something.", example: "The exchange programme was a great opportunity to travel." },
+  { word: "curious", level: "A2", part: "adjective", pronunciation: "/\u02c8kjʊəriəs/", meaning: "Wanting to know or learn about something.", example: "The curious student stayed after class to ask one more question." },
+  { word: "achieve", level: "A2", part: "verb", pronunciation: "/ə\u02c8tʃiːv/", meaning: "To succeed in doing or reaching something through effort.", example: "A little practice each day can help you achieve your goal." },
+  { word: "reliable", level: "B1", part: "adjective", pronunciation: "/rɪ\u02c8laɪəbl/", meaning: "That you can trust or depend on.", example: "We need a reliable source before we share the information." },
+  { word: "notice", level: "A2", part: "verb", pronunciation: "/\u02c8nəʊtɪs/", meaning: "To see or become aware of something.", example: "Did you notice how the final paragraph changes the tone?" },
+  { word: "approach", level: "B2", part: "noun", pronunciation: "/ə\u02c8prəʊtʃ/", meaning: "A way of dealing with a person or situation.", example: "Her calm approach made the difficult conversation easier." },
+  { word: "benefit", level: "B1", part: "noun", pronunciation: "/\u02c8benɪfɪt/", meaning: "An advantage or helpful result.", example: "One benefit of reading widely is a stronger vocabulary." },
+  { word: "gather", level: "B1", part: "verb", pronunciation: "/\u02c8ɡæðə(r)/", meaning: "To bring things together or collect information.", example: "The researchers gathered responses from local residents." },
+  { word: "ordinary", level: "A2", part: "adjective", pronunciation: "/\u02c8ɔːdnri/", meaning: "Normal or not especially different.", example: "It was an ordinary morning until the phone rang." },
+  { word: "aware", level: "B1", part: "adjective", pronunciation: "/ə\u02c8weə(r)/", meaning: "Knowing that something exists or is happening.", example: "Are you aware of the new library opening hours?" },
+  { word: "efficient", level: "B2", part: "adjective", pronunciation: "/ɪ\u02c8fɪʃnt/", meaning: "Working well without wasting time or resources.", example: "A clear plan is an efficient way to begin the project." },
+  { word: "journey", level: "A1", part: "noun", pronunciation: "/\u02c8dʒɜːni/", meaning: "The act of travelling from one place to another.", example: "The train journey through the hills took two hours." },
+  { word: "improve", level: "A1", part: "verb", pronunciation: "/ɪm\u02c8pruːv/", meaning: "To become better, or to make something better.", example: "She listens to podcasts to improve her English." },
+  { word: "consider", level: "A2", part: "verb", pronunciation: "/kən\u02c8sɪdə(r)/", meaning: "To think carefully about something before deciding.", example: "We should consider every option before we choose." },
+  { word: "evidence", level: "A2", part: "noun", pronunciation: "/\u02c8evɪdəns/", meaning: "Facts or information that show whether something is true.", example: "The report includes evidence from several studies." },
+  { word: "maintain", level: "B2", part: "verb", pronunciation: "/meɪn\u02c8teɪn/", meaning: "To keep something at the same level or in good condition.", example: "It takes effort to maintain a healthy work-life balance." },
+  { word: "generous", level: "B1", part: "adjective", pronunciation: "/\u02c8dʒenərəs/", meaning: "Willing to give or share more than is expected.", example: "It was generous of him to offer us a place to stay." },
+  { word: "environment", level: "A2", part: "noun", pronunciation: "/ɪn\u02c8vaɪrənmənt/", meaning: "The natural world, or the conditions around someone.", example: "Small choices can have an impact on the environment." },
+  { word: "significant", level: "B2", part: "adjective", pronunciation: "/sɪɡ\u02c8nɪfɪkənt/", meaning: "Large or important enough to be noticed.", example: "The study found a significant change in reading habits." },
+  { word: "support", level: "A2", part: "verb", pronunciation: "/sə\u02c8pɔːt/", meaning: "To help or encourage someone or something.", example: "Good feedback can support learners as they grow." },
+  { word: "opportunity", level: "A2", part: "noun", pronunciation: "/ˌɒpə\u02c8tjuːnəti/", meaning: "A situation that makes it possible to do something.", example: "The exchange programme was a great opportunity to travel." },
 ];
+
+const ukrainianMeanings: Record<string, string> = {
+  curious: "Бажає знати або дізнатися про щось.",
+  achieve: "Успішно зробити або досягти чогось завдяки зусиллям.",
+  reliable: "Такий, кому можна довіряти або на кого можна покластися.",
+  notice: "Помітити або усвідомити когось чи щось.",
+  approach: "Спосіб дій або підхід до роботи з людиною чи ситуацією.",
+  benefit: "Перевага або корисний результат.",
+  gather: "Зібрати разом або отримати інформацію.",
+  ordinary: "Звичайний, нічим особливо не відмінний.",
+  aware: "Такий, що знає про існування чогось або про те, що відбувається.",
+  efficient: "Такий, що працює добре, не марнуючи часу чи ресурсів.",
+  journey: "Подорож з одного місця до іншого.",
+  improve: "Ставати кращим або робити щось кращим.",
+  consider: "Ретельно обмірковувати щось перед ухваленням рішення.",
+  evidence: "Факти або інформація, що підтверджують правдивість чогось.",
+  maintain: "Підтримувати щось на тому самому рівні або в належному стані.",
+  generous: "Готовий віддавати чи ділитися більше, ніж очікується.",
+  environment: "Природний світ або умови, що оточують когось.",
+  significant: "Достатньо великий або важливий, щоб його помітили.",
+  support: "Допомагати комусь або чомусь чи заохочувати їх.",
+  opportunity: "Ситуація, що дає змогу щось зробити.",
+};
+
+const germanMeanings: Record<string, string> = {
+  curious: "Wissbegierig und darauf aus, etwas zu erfahren oder zu lernen.",
+  achieve: "Etwas durch Anstrengung erfolgreich tun oder erreichen.",
+  reliable: "So, dass man jemandem oder etwas vertrauen kann.",
+  notice: "Jemanden oder etwas sehen oder bemerken.",
+  approach: "Eine Art, mit einer Person oder Situation umzugehen.",
+  benefit: "Ein Vorteil oder ein hilfreiches Ergebnis.",
+  gather: "Dinge zusammenbringen oder Informationen sammeln.",
+  ordinary: "Normal und nicht besonders oder außergewöhnlich.",
+  aware: "Wissen, dass etwas existiert oder geschieht.",
+  efficient: "Wirksam, ohne Zeit oder Ressourcen zu verschwenden.",
+  journey: "Eine Reise von einem Ort zu einem anderen.",
+  improve: "Besser werden oder etwas besser machen.",
+  consider: "Etwas sorgfältig durchdenken, bevor man sich entscheidet.",
+  evidence: "Tatsachen oder Informationen, die zeigen, ob etwas wahr ist.",
+  maintain: "Etwas auf demselben Niveau oder in gutem Zustand halten.",
+  generous: "Bereit, mehr zu geben oder zu teilen als erwartet.",
+  environment: "Die natürliche Welt oder die Bedingungen, die jemanden umgeben.",
+  significant: "Groß oder wichtig genug, um bemerkt zu werden.",
+  support: "Jemandem oder etwas helfen oder Mut machen.",
+  opportunity: "Eine Situation, die es ermöglicht, etwas zu tun.",
+};
+
+const meaningLanguageNames: Record<MeaningLanguage, string> = {
+  en: "English",
+  uk: "Ukrainian",
+  de: "German",
+};
 
 const levels = ["All", "A1", "A2", "B1", "B2"] as const;
 type LevelFilter = (typeof levels)[number];
@@ -62,6 +116,7 @@ export default function Home() {
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  const [meaningLanguage, setMeaningLanguage] = useState<MeaningLanguage>("en");
   const savedSnapshot = useSyncExternalStore(subscribeToSavedWords, getSavedWordsSnapshot, getServerSavedWordsSnapshot);
   const saved = JSON.parse(savedSnapshot) as string[];
   const [showSaved, setShowSaved] = useState(false);
@@ -132,7 +187,7 @@ export default function Home() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#home" aria-label="Wordwell home">
+        <a className="brand" href="#home" aria-label="wordWell home">
           <span className="brand-mark">w.</span>
           <span>Wordwell</span>
         </a>
@@ -212,12 +267,35 @@ export default function Home() {
                 <button className="card-face card-back" onClick={() => setFlipped(false)} aria-label={`Hide meaning of ${current.word}`}>
                   <span className="card-topline"><span>THE MEANING</span><span className={`level-tag level-${current.level.toLowerCase()}`}>{current.level}</span></span>
                   <span className="meaning-label">{current.word}</span>
-                  <span className="meaning-text">{current.meaning}</span>
+                  <span className="meaning-text" lang={meaningLanguage}>
+                    {meaningLanguage === "uk"
+                      ? ukrainianMeanings[current.word]
+                      : meaningLanguage === "de"
+                        ? germanMeanings[current.word]
+                        : current.meaning}
+                  </span>
                   <span className="example-block"><span>IN A SENTENCE</span><span>“{current.example}”</span></span>
                   <span className="card-bottomline"><span>Turn back to the word</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                 </button>
               </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); }}>Back to the deck</button></div>}
             </div>
+            {flipped && current && (
+              <div className="language-toggle" role="group" aria-label="Meaning language">
+                {(["en", "uk", "de"] as const).map((language) => (
+                  <button
+                    key={language}
+                    type="button"
+                    lang={language}
+                    aria-label={`Show meaning in ${meaningLanguageNames[language]}`}
+                    aria-pressed={meaningLanguage === language}
+                    title={`Show meaning in ${meaningLanguageNames[language]}`}
+                    onClick={() => setMeaningLanguage(language)}
+                  >
+                    {language.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="study-controls">
