@@ -103,7 +103,7 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .language-toggle button:disabled { color: #a5ada6; cursor: not-allowed; }
 .card-topline, .card-bottomline { display: flex; align-items: center; justify-content: space-between; color: #657168; font-size: 0.6875rem; font-weight: 700; letter-spacing: 1px; }
 .card-topline .level-tag { letter-spacing: 0; }
-.word-display { margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 5.375rem); font-weight: 500; line-height: 1; letter-spacing: 0; }
+.word-display { margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 4.3rem); font-weight: 500; line-height: 1; letter-spacing: 0; }
 .word-meta { display: flex; align-items: center; gap: 8px; color: #59665d; font-size: 0.8125rem; }
 .word-meta i { width: 5px; height: 5px; border-radius: 50%; background: var(--coral); }
 .pronunciation { margin-left: 9px; color: #637067; font-family: var(--font-display); font-size: 0.875rem; }
