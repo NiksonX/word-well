@@ -71,6 +71,7 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .level-a2 { color: #49675f; background: #e6eeea; }
 .level-b1 { color: #856638; background: #f5edd5; }
 .level-b2 { color: #9b5849; background: #f4e3de; }
+.level-c1 { color: #6b4f86; background: #ece4f3; }
 .empty-list { padding: 14px 8px; color: var(--muted); font-size: 0.8125rem; line-height: 1.6; }
 .oxford-card-link { display: flex; align-items: center; gap: 10px; margin-top: 20px; padding: 13px 10px; border: 1px solid #e2e5df; border-radius: 6px; color: inherit; text-decoration: none; background: rgba(250, 250, 247, .7); transition: border-color 150ms ease, transform 150ms ease; }
 .oxford-card-link:hover { border-color: #b7c8b9; transform: translateY(-2px); }
@@ -112,7 +113,7 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .card-bottomline { margin-top: auto; padding-top: 25px; border-top: 1px solid #e8e9e2; color: #5f6b62; font-size: 0.75rem; font-weight: 500; letter-spacing: 0; }
 .turn-icon { color: var(--green); font-size: 1.25rem; }
 /* .card-ornament { position: absolute; right: 29px; bottom: 83px; color: #f1d86d; font-size: 6.5rem; line-height: 1; transform: rotate(-12deg); opacity: .8; } */
-.meaning-label { margin-top: 24px; color: var(--green); font-family: var(--font-display); font-size: 2.25rem; font-style: italic; line-height: 1.15; }
+.meaning-label { margin-top: 24px; color: var(--green); font-family: var(--font-display); font-size: 2.75rem; font-style: italic; line-height: 1.15; }
 .meaning-text { max-width: 420px; margin-top: 12px; font-family: var(--font-display); font-size: 1.875rem; line-height: 1.25; }
 .example-block { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: 16px 18px; border-left: 2px solid var(--coral); background: #f7f8f3; color: #334139; font-family: var(--font-display); font-size: 1.375rem; font-style: italic; line-height: 1.45; }
 .example-block span:first-child { color: #68756c; font-family: var(--font-body); font-size: 0.75rem; font-style: normal; font-weight: 750; letter-spacing: 1px; }
@@ -120,15 +121,14 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 /* The back stacks word, meaning and example; tighten it to the card's own height so nothing spills out. */
 .card-stage { container-type: size; container-name: card; }
 .card-back:has(.example-block) .meaning-label { margin-top: clamp(12px, 6cqh, 24px); }
-@container card (max-height: 28.75rem) {
+@container card (max-height: 30rem) {
   .card-back:has(.example-block) .card-bottomline { display: none; }
-  .card-back:has(.example-block) .meaning-text { margin-bottom: 14px; }
+  .card-back:has(.example-block) .meaning-label { margin-top: 4px; line-height: 1.05; }
+  .card-back:has(.example-block) .meaning-text { margin-top: 6px; margin-bottom: 8px; line-height: 1.2; }
 }
 /* Short cards only tighten spacing; text keeps its normal size. */
 @container card (max-height: 25rem) {
   .card-back:has(.example-block) { padding-top: 24px; padding-bottom: 24px; }
-  .card-back:has(.example-block) .meaning-label { line-height: 1.15; }
-  .card-back:has(.example-block) .meaning-text { margin-top: 6px; line-height: 1.2; }
   .card-back:has(.example-block) .example-block { gap: 5px; padding: 11px 14px; line-height: 1.35; }
 }
 .card-empty { flex: 1; display: grid; place-content: center; justify-items: center; gap: 14px; color: #738076; }

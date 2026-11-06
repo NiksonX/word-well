@@ -3,8 +3,9 @@
 import { memo, useCallback, useDeferredValue, useEffect, useEffectEvent, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react";
 import oxfordWordData from "./american-oxford-3000-words.json";
+import oxfordExtraWordData from "./american-oxford-5000-extra-words.json";
 
-type WordLevel = "A1" | "A2" | "B1" | "B2";
+type WordLevel = "A1" | "A2" | "B1" | "B2" | "C1";
 type WordSense = { part: string; level: WordLevel };
 type MeaningLanguage = "en" | "uk" | "de";
 type TranslationLanguage = Exclude<MeaningLanguage, "en">;
@@ -73,7 +74,7 @@ const curatedByWord = new Map(curatedWords.map(({ word, level, part, pronunciati
   word.toLocaleLowerCase("en-US"),
   { level, part, pronunciation, meaning, example },
 ]));
-const words: Word[] = (oxfordWordData as OxfordWordRecord[]).map((sourceWord) => {
+const words: Word[] = [...oxfordWordData, ...oxfordExtraWordData].map((sourceWord: OxfordWordRecord) => {
   const curated = curatedByWord.get(sourceWord.word.toLocaleLowerCase("en-US"));
   return {
     word: sourceWord.word,
@@ -168,14 +169,13 @@ function WordList({ deck, currentIndex, onSelect, resetKey }: {
   );
 }
 
-// No "All" chip: pressing the active chip again clears the filter.
-const levels: WordLevel[] = ["A1", "A2", "B1", "B2"];
+const levels: WordLevel[] = ["A1", "A2", "B1", "B2", "C1"];
 type LevelFilter = "All" | WordLevel;
 const partsOfSpeech = ["Noun", "Verb", "Adj", "Adv", "Other"] as const;
 type PartOfSpeech = (typeof partsOfSpeech)[number];
 type PartFilter = "All" | PartOfSpeech;
 
-// Source labels look like "n., v.", "adj./adv.", "modal v." or "number"; map each piece to a coarse group.
+
 function partGroups(part: string): Set<PartOfSpeech> {
   const groups = new Set<PartOfSpeech>();
   for (const piece of part.toLowerCase().split(/[,/]/)) {
