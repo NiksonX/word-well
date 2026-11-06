@@ -65,6 +65,8 @@ const translationLoaders: Record<TranslationLanguage, () => Promise<Translations
   uk: () => import("./meanings-uk.json").then((module) => module.default as Translations),
   de: () => import("./meanings-de.json").then((module) => module.default as Translations),
 };
+// Example sentences for the full list (~49 KB gzipped) are also split out and fetched after first render.
+const loadExamples = () => import("./examples-en.json").then((module) => module.default as Record<string, string>);
 
 type OxfordWordRecord = { word: string; levels: string[]; senses: { part: string; level: string }[]; meaning: string };
 const curatedByWord = new Map(curatedWords.map(({ word, level, part, pronunciation, meaning, example }) => [
@@ -196,6 +198,7 @@ export default function Home() {
   const [flipped, setFlipped] = useState(false);
   const [meaningLanguage, setMeaningLanguage] = useState<MeaningLanguage>("en");
   const [loadedTranslations, setLoadedTranslations] = useState<Partial<Record<TranslationLanguage, Translations>>>({});
+  const [examples, setExamples] = useState<Record<string, string>>({});
   const savedSnapshot = useSyncExternalStore(subscribeToSavedWords, getSavedWordsSnapshot, getServerSavedWordsSnapshot);
   const saved = useMemo(() => JSON.parse(savedSnapshot) as string[], [savedSnapshot]);
   const [showSaved, setShowSaved] = useState(false);
@@ -219,6 +222,11 @@ export default function Home() {
   // Falls back to English while a translation file is loading or if a word has no translation.
   const activeMeaningLanguage: MeaningLanguage = translatedMeaning ? meaningLanguage : "en";
   const meaningText = translatedMeaning ?? current?.meaning;
+  const exampleText = current && (current.example ?? examples[current.word]);
+
+  useEffect(() => {
+    loadExamples().then(setExamples, () => {});
+  }, []);
 
   function chooseMeaningLanguage(language: MeaningLanguage) {
     setMeaningLanguage(language);
@@ -393,7 +401,7 @@ export default function Home() {
                   <span className="meaning-text" lang={activeMeaningLanguage}>
                     {meaningText}
                   </span>
-                  {current.example && <span className="example-block"><span>IN A SENTENCE</span><span>“{current.example}”</span></span>}
+                  {exampleText && <span className="example-block"><span>IN A SENTENCE</span><span>“{exampleText}”</span></span>}
                   <span className="card-bottomline"><span>Turn back to the word</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                 </button>
               </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); }}>Back to the deck</button></div>}
