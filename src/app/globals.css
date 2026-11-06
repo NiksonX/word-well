@@ -16,7 +16,6 @@
   --color-background: var(--paper);
   --color-foreground: var(--ink);
   --font-sans: var(--font-dm-sans);
-  --font-mono: var(--font-geist-mono);
 }
 
 * { box-sizing: border-box; }
@@ -54,11 +53,13 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .saved-filter { width: 32px; height: 32px; padding: 0; border: 0; background: transparent; color: #5f6b62; font-size: 20px; cursor: pointer; }
 .saved-filter.active, .save-button.is-saved { color: #d1883b; }
 .word-list { flex: 1; overflow: auto; max-height: 354px; scrollbar-width: thin; scrollbar-color: #d8ddd5 transparent; }
-.word-row { content-visibility: auto; contain-intrinsic-size: auto 48px; width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 48px; padding: 0 10px; border: 0; border-bottom: 1px solid #e8eae5; background: transparent; text-align: left; cursor: pointer; transition: background 150ms ease; }
+.word-list-spacer { position: relative; }
+.word-list-window { position: absolute; inset: 0 0 auto; }
+.word-row { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; height: 48px; overflow: hidden; padding: 0 10px; border: 0; border-bottom: 1px solid #e8eae5; background: transparent; text-align: left; cursor: pointer; transition: background 150ms ease; }
 .word-row:hover { background: #ebece6; }
 .word-row.selected { border-bottom-color: transparent; border-radius: 5px; background: #e7ece5; }
-.word-row-name { font-size: 14px; font-weight: 630; }
-.word-row-name small { display: block; margin-top: 3px; color: #68756c; font-size: 11px; font-weight: 450; }
+.word-row-name { min-width: 0; overflow: hidden; font-size: 14px; font-weight: 630; text-overflow: ellipsis; white-space: nowrap; }
+.word-row-name small { display: block; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; color: #68756c; font-size: 11px; font-weight: 450; }
 .row-level, .level-tag { display: inline-grid; place-items: center; min-width: 32px; padding: 5px 7px; border-radius: 3px; font-size: 10px; font-weight: 750; }
 .level-a1 { color: #35654f; background: #e3eee2; }
 .level-a2 { color: #49675f; background: #e6eeea; }

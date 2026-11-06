@@ -7,13 +7,18 @@ import oxfordWordData from "./american-oxford-3000-words.json";
 type WordLevel = "A1" | "A2" | "B1" | "B2";
 type WordSense = { part: string; level: WordLevel };
 type MeaningLanguage = "en" | "uk" | "de";
+type TranslationLanguage = Exclude<MeaningLanguage, "en">;
 type Meaning = Record<MeaningLanguage, string>;
+type Translations = Record<string, string>;
 type Word = {
   word: string;
   levels: WordLevel[];
   senses: WordSense[];
   pronunciation?: string;
-  meaning: Meaning;
+  /** English meaning; translations for the full list are loaded on demand. */
+  meaning: string;
+  /** Curated words ship their own translations inline. */
+  translations?: Record<TranslationLanguage, string>;
   example?: string;
   supplemental?: boolean;
 };
@@ -55,7 +60,13 @@ const meaningLanguageNames: Record<MeaningLanguage, string> = {
   de: "German",
 };
 
-type OxfordWordRecord = { word: string; levels: string[]; senses: { part: string; level: string }[]; meaning: Meaning };
+// Translations are split out of the main bundle (~55 KB gzipped) and fetched only when a learner picks that language.
+const translationLoaders: Record<TranslationLanguage, () => Promise<Translations>> = {
+  uk: () => import("./meanings-uk.json").then((module) => module.default as Translations),
+  de: () => import("./meanings-de.json").then((module) => module.default as Translations),
+};
+
+type OxfordWordRecord = { word: string; levels: string[]; senses: { part: string; level: string }[]; meaning: string };
 const curatedByWord = new Map(curatedWords.map(({ word, level, part, pronunciation, meaning, example }) => [
   word.toLocaleLowerCase("en-US"),
   { level, part, pronunciation, meaning, example },
@@ -67,7 +78,8 @@ const words: Word[] = (oxfordWordData as OxfordWordRecord[]).map((sourceWord) =>
     levels: sourceWord.levels as WordLevel[],
     senses: sourceWord.senses.map((sense) => ({ part: sense.part, level: sense.level as WordLevel })),
     pronunciation: curated?.pronunciation,
-    meaning: curated?.meaning ?? sourceWord.meaning,
+    meaning: curated?.meaning.en ?? sourceWord.meaning,
+    translations: curated && { uk: curated.meaning.uk, de: curated.meaning.de },
     example: curated?.example,
   };
 });
@@ -79,15 +91,18 @@ for (const curated of curatedWords) {
     levels: [curated.level],
     senses: [{ part: curated.part, level: curated.level }],
     pronunciation: curated.pronunciation,
-    meaning: curated.meaning,
+    meaning: curated.meaning.en,
+    translations: { uk: curated.meaning.uk, de: curated.meaning.de },
     example: curated.example,
     supplemental: true,
   });
 }
-words.sort((left, right) => left.word.localeCompare(right.word, "en-US", { sensitivity: "base", numeric: true }));
+// One shared collator: String#localeCompare with options builds a new collator per comparison (~25x slower).
+const wordCollator = new Intl.Collator("en-US", { sensitivity: "base", numeric: true });
+words.sort((left, right) => wordCollator.compare(left.word, right.word));
 const searchIndex = new Map(words.map((item) => [
   item,
-  `${item.word} ${item.senses.map((sense) => sense.part).join(" ")} ${item.meaning.en}`.toLowerCase(),
+  `${item.word} ${item.senses.map((sense) => sense.part).join(" ")} ${item.meaning}`.toLowerCase(),
 ]));
 const wordNumbers = new Map(words.map((item, itemIndex) => [item, itemIndex + 1]));
 
@@ -104,6 +119,52 @@ const WordRow = memo(function WordRow({ item, itemIndex, selected, onSelect }: {
     </button>
   );
 });
+
+const wordRowHeight = 48;
+const wordListOverscan = 8;
+
+// Renders only the rows in (and just around) the scroll viewport, so the DOM stays
+// small even though the deck holds ~3,000 words.
+function WordList({ deck, currentIndex, onSelect, resetKey }: {
+  deck: Word[];
+  currentIndex: number;
+  onSelect: (itemIndex: number) => void;
+  resetKey: string;
+}) {
+  const listRef = useRef<HTMLElement>(null);
+  const [scrollTop, setScrollTop] = useState(0);
+  const [viewportHeight, setViewportHeight] = useState(360);
+
+  useEffect(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const observer = new ResizeObserver(() => setViewportHeight(list.clientHeight));
+    observer.observe(list);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    // Scrolling to the top fires a scroll event, which resets scrollTop state.
+    if (listRef.current) listRef.current.scrollTop = 0;
+  }, [resetKey]);
+
+  const start = Math.min(deck.length, Math.max(0, Math.floor(scrollTop / wordRowHeight) - wordListOverscan));
+  const end = Math.min(deck.length, Math.ceil((scrollTop + viewportHeight) / wordRowHeight) + wordListOverscan);
+
+  return (
+    <nav ref={listRef} className="word-list" aria-label="Words in this deck" onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}>
+      {deck.length ? (
+        <div className="word-list-spacer" style={{ height: deck.length * wordRowHeight }}>
+          <div className="word-list-window" style={{ transform: `translateY(${start * wordRowHeight}px)` }}>
+            {deck.slice(start, end).map((item, offset) => (
+              <WordRow key={item.word} item={item} itemIndex={start + offset} selected={start + offset === currentIndex} onSelect={onSelect} />
+            ))}
+          </div>
+        </div>
+      ) : <p className="empty-list">No words found. Try another level or search.</p>}
+    </nav>
+  );
+}
 
 const levels = ["All", "A1", "A2", "B1", "B2"] as const;
 type LevelFilter = "All" | WordLevel;
@@ -133,6 +194,7 @@ export default function Home() {
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
   const [meaningLanguage, setMeaningLanguage] = useState<MeaningLanguage>("en");
+  const [loadedTranslations, setLoadedTranslations] = useState<Partial<Record<TranslationLanguage, Translations>>>({});
   const savedSnapshot = useSyncExternalStore(subscribeToSavedWords, getSavedWordsSnapshot, getServerSavedWordsSnapshot);
   const saved = useMemo(() => JSON.parse(savedSnapshot) as string[], [savedSnapshot]);
   const [showSaved, setShowSaved] = useState(false);
@@ -150,7 +212,21 @@ export default function Home() {
   }, [deferredQuery, level, saved, showSaved]);
   const currentIndex = deck.length ? index % deck.length : 0;
   const current = deck[currentIndex];
-  const activeMeaningLanguage: MeaningLanguage = current?.meaning[meaningLanguage] ? meaningLanguage : "en";
+  const translatedMeaning = current && meaningLanguage !== "en"
+    ? current.translations?.[meaningLanguage] ?? loadedTranslations[meaningLanguage]?.[current.word]
+    : undefined;
+  // Falls back to English while a translation file is loading or if a word has no translation.
+  const activeMeaningLanguage: MeaningLanguage = translatedMeaning ? meaningLanguage : "en";
+  const meaningText = translatedMeaning ?? current?.meaning;
+
+  function chooseMeaningLanguage(language: MeaningLanguage) {
+    setMeaningLanguage(language);
+    if (language === "en" || loadedTranslations[language]) return;
+    translationLoaders[language]().then(
+      (translations) => setLoadedTranslations((loaded) => ({ ...loaded, [language]: translations })),
+      () => setMeaningLanguage((selected) => (selected === language ? "en" : selected)),
+    );
+  }
 
   const selectCard = useCallback((itemIndex: number) => {
     setIndex(itemIndex);
@@ -230,10 +306,11 @@ export default function Home() {
                 type="button"
                 lang={language}
                 aria-label={`Show meaning in ${meaningLanguageNames[language]}`}
-                aria-pressed={activeMeaningLanguage === language}
-                disabled={!current?.meaning[language]}
+                aria-pressed={meaningLanguage === language}
                 title={`Show meaning in ${meaningLanguageNames[language]}`}
-                onClick={() => setMeaningLanguage(language)}
+                // Warm the translation chunk on hover; import() caches, so the click reuses it.
+                onPointerEnter={language === "en" ? undefined : () => void translationLoaders[language]().catch(() => {})}
+                onClick={() => chooseMeaningLanguage(language)}
               >
                 {language.toUpperCase()}
               </button>
@@ -270,12 +347,7 @@ export default function Home() {
             <button className={`saved-filter ${showSaved ? "active" : ""}`} onClick={() => setShowSaved((value) => !value)} aria-label={showSaved ? "Show all words" : "Show saved words"} title={showSaved ? "Show all words" : "Show saved words"}>{showSaved ? "★" : "☆"}</button>
           </div>
 
-          <nav className="word-list" aria-label="Words in this deck">
-            {deck.map((item, itemIndex) => (
-              <WordRow key={item.word} item={item} itemIndex={itemIndex} selected={itemIndex === currentIndex} onSelect={selectCard} />
-            ))}
-            {!deck.length && <p className="empty-list">No words found. Try another level or search.</p>}
-          </nav>
+          <WordList deck={deck} currentIndex={currentIndex} onSelect={selectCard} resetKey={`${level}|${deferredQuery}|${showSaved}`} />
 
           {/* <a className="oxford-card-link" href="https://www.oxfordlearnersdictionaries.com/wordlists/oxford3000-5000" target="_blank" rel="noreferrer">
             <span className="oxford-link-mark">O</span>
@@ -311,7 +383,7 @@ export default function Home() {
                   <span className="card-topline"><span>THE MEANING</span><span className={`level-tag level-${current.levels[0].toLowerCase()}`}>{current.levels.join(" / ")}</span></span>
                   <span className="meaning-label">{current.word}</span>
                   <span className="meaning-text" lang={activeMeaningLanguage}>
-                    {current.meaning[activeMeaningLanguage]}
+                    {meaningText}
                   </span>
                   {current.example && <span className="example-block"><span>IN A SENTENCE</span><span>“{current.example}”</span></span>}
                   <span className="card-bottomline"><span>Turn back to the word</span><span className="turn-icon" aria-hidden="true">↻</span></span>
