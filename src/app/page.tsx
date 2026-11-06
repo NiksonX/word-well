@@ -239,8 +239,8 @@ export default function Home() {
 
   function moveCard(direction: -1 | 1) {
     if (!deck.length) return;
+    // Keep the side the learner is studying (word or meaning) while browsing.
     setIndex((currentIndex) => (currentIndex + direction + deck.length) % deck.length);
-    flipCard(false);
   }
 
   function toggleSaved(word: string) {
