@@ -145,8 +145,9 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .level-chip { min-width: 44px; height: 44px; font-size: 13px; }
   .saved-filter { width: 44px; height: 44px; }
   .card-stage { height: clamp(340px, 55svh, 430px); touch-action: pan-y; }
-  .study-controls { width: min(100%, 340px); gap: 8px; }
-  .icon-button, .save-button { width: 44px; height: 44px; flex: 0 0 44px; }
+  .study-controls { width: min(100%, 400px); gap: 8px; }
+  .icon-button, .save-button { width: 48px; height: 48px; flex: 0 0 48px; }
+  .icon-button { width: 64px; flex: 0 0 64px; border-radius: 5px; font-size: 24px; }
   .reveal-button { min-width: 0; height: 48px; flex: 1; }
   .desktop-hint { display: none; }
   .mobile-hint { display: flex; justify-content: center; font-size: 11px; }
@@ -163,6 +164,7 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
   .example-block { font-size: 14px; }
   .study-controls { gap: 10px; }
   .reveal-button { min-width: 0; padding: 0 12px; }
+  .icon-button { width: 56px; flex: 0 0 56px; }
   .keyboard-hint { gap: 4px; font-size: 8px; }
   .keyboard-hint b { margin: 0 3px; }
   .page-footer { padding: 0 17px; }
