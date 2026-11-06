@@ -47,6 +47,8 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .level-filters { display: flex; align-items: center; gap: 5px; margin-bottom: 18px; }
 .level-chip { min-width: 40px; height: 36px; border: 1px solid transparent; border-radius: 5px; background: transparent; color: #5f6b62; font-size: 0.75rem; cursor: pointer; transition: background 160ms ease, color 160ms ease; }
 .level-chip.active { color: white; background: var(--green); }
+.part-filters { justify-content: space-between; gap: 2px; margin-top: -10px; }
+.part-filters .level-chip { min-width: 0; padding: 0 7px; }
 .level-chip:not(.active):hover { background: #e8ebe4; color: var(--ink); }
 .search-box { height: 44px; display: flex; align-items: center; gap: 9px; border: 1px solid #d5dbd3; border-radius: 6px; padding: 0 10px; background: #fafaf7; color: #5f6b62; }
 .search-box > span { font-size: 1.25rem; line-height: 1; transform: rotate(-20deg); }

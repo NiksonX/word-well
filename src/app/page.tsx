@@ -168,8 +168,38 @@ function WordList({ deck, currentIndex, onSelect, resetKey }: {
   );
 }
 
-const levels = ["All", "A1", "A2", "B1", "B2"] as const;
+// No "All" chip: pressing the active chip again clears the filter.
+const levels: WordLevel[] = ["A1", "A2", "B1", "B2"];
 type LevelFilter = "All" | WordLevel;
+const partsOfSpeech = ["Noun", "Verb", "Adj", "Adv", "Other"] as const;
+type PartOfSpeech = (typeof partsOfSpeech)[number];
+type PartFilter = "All" | PartOfSpeech;
+
+// Source labels look like "n., v.", "adj./adv.", "modal v." or "number"; map each piece to a coarse group.
+function partGroups(part: string): Set<PartOfSpeech> {
+  const groups = new Set<PartOfSpeech>();
+  for (const piece of part.toLowerCase().split(/[,/]/)) {
+    const label = piece.trim();
+    if (!label) continue;
+    if (/^(n|noun)\.?$/.test(label) || label === "noun") groups.add("Noun");
+    else if (/(^|\s)v\.?$|verb/.test(label)) groups.add("Verb");
+    else if (/^adj/.test(label)) groups.add("Adj");
+    else if (/^adv/.test(label)) groups.add("Adv");
+    else groups.add("Other");
+  }
+  return groups;
+}
+
+const senseGroups = new Map<WordSense, Set<PartOfSpeech>>(
+  words.flatMap((item) => item.senses.map((sense) => [sense, partGroups(sense.part)] as const)),
+);
+
+function matchesFilters(item: Word, level: LevelFilter, part: PartFilter) {
+  if (part === "All") return level === "All" || item.levels.includes(level);
+  return item.senses.some((sense) => (
+    (level === "All" || sense.level === level) && senseGroups.get(sense)!.has(part)
+  ));
+}
 // const contactEmail = "mock@mail.com";
 const savedWordsKey = "wordwell-saved";
 const savedWordsEvent = "wordwell:saved-words";
@@ -193,6 +223,7 @@ function getServerSavedWordsSnapshot() {
 
 export default function Home() {
   const [level, setLevel] = useState<LevelFilter>("All");
+  const [part, setPart] = useState<PartFilter>("All");
   const [query, setQuery] = useState("");
   const [index, setIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
@@ -209,11 +240,11 @@ export default function Home() {
     const needle = deferredQuery.trim().toLowerCase();
     const savedSet = new Set(saved);
     return words.filter((item) => (
-      (level === "All" || item.levels.includes(level))
+      matchesFilters(item, level, part)
       && (!needle || searchIndex.get(item)!.includes(needle))
       && (!showSaved || savedSet.has(item.word))
     ));
-  }, [deferredQuery, level, saved, showSaved]);
+  }, [deferredQuery, level, part, saved, showSaved]);
   const currentIndex = deck.length ? index % deck.length : 0;
   const current = deck[currentIndex];
   const translatedMeaning = current && meaningLanguage !== "en"
@@ -346,7 +377,13 @@ export default function Home() {
 
           <div className="level-filters" aria-label="Filter by CEFR level">
             {levels.map((item) => (
-              <button className={`level-chip ${level === item ? "active" : ""}`} key={item} onClick={() => setLevel(item)} aria-pressed={level === item}>{item}</button>
+              <button className={`level-chip ${level === item ? "active" : ""}`} key={item} onClick={() => setLevel((selected) => (selected === item ? "All" : item))} aria-pressed={level === item}>{item}</button>
+            ))}
+          </div>
+
+          <div className="level-filters part-filters" aria-label="Filter by part of speech">
+            {partsOfSpeech.map((item) => (
+              <button className={`level-chip ${part === item ? "active" : ""}`} key={item} onClick={() => setPart((selected) => (selected === item ? "All" : item))} aria-pressed={part === item}>{item}</button>
             ))}
           </div>
 
@@ -404,7 +441,7 @@ export default function Home() {
                   {exampleText && <span className="example-block"><span>IN A SENTENCE</span><span>“{exampleText}”</span></span>}
                   <span className="card-bottomline"><span>Turn back to the word</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                 </button>
-              </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); }}>Back to the deck</button></div>}
+              </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); setPart("All"); }}>Back to the deck</button></div>}
             </div>
           </div>
 
