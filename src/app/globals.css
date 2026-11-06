@@ -83,11 +83,14 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .progress-track i { display: block; height: 100%; border-radius: inherit; background: var(--coral); transition: width 250ms ease; }
 .card-stage { position: relative; width: min(100%, 540px); height: clamp(350px, 49vh, 470px); perspective: 1300px; animation: card-arrive 650ms cubic-bezier(.2,.7,.25,1) both; }
 .card-shadow { position: absolute; inset: 0; border-radius: 7px; }
-.card-shadow-back { background: #e5e8df; box-shadow: 0 8px 0 #e5e8df; }
+/* Real geometry (not box-shadow) so the 8px ledge under the card is clickable. */
+.card-shadow-back { bottom: -8px; background: #e5e8df; cursor: pointer; }
 .flashcard { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 650ms cubic-bezier(.2,.7,.25,1); }
 .flashcard.is-flipped { transform: rotateY(180deg); }
 .card-face { position: absolute; inset: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: stretch; padding: clamp(24px, 4vw, 42px); overflow: hidden; border: 1px solid #dfe4dc; border-radius: 7px; backface-visibility: hidden; -webkit-backface-visibility: hidden; text-align: left; cursor: pointer; }
-.card-front { background: #fffef9; }
+/* iOS Safari/WebKit: keep children of a card face free of z-index/own layers (they escape backface-visibility
+   and the hidden face keeps catching taps, so the card won't flip back). rotateY(0) pins the front face in 3D. */
+.card-front { transform: rotateY(0deg); background: #fffef9; }
 .card-back { transform: rotateY(180deg); background: #e7eee6; }
 .language-toggle { display: flex; flex: 0 0 auto; gap: 1px; padding: 3px; border: 1px solid #cbd7ce; border-radius: 4px; background: #f7f8f3; }
 .language-toggle button { min-width: 30px; height: 26px; padding: 0 6px; border: 0; border-radius: 2px; background: transparent; color: #78877d; font-size: 10px; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; }
@@ -96,8 +99,8 @@ button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid 
 .language-toggle button:disabled { color: #a5ada6; cursor: not-allowed; }
 .card-topline, .card-bottomline { display: flex; align-items: center; justify-content: space-between; color: #657168; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
 .card-topline .level-tag { letter-spacing: 0; }
-.word-display { position: relative; z-index: 1; margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(56px, 8vw, 86px); font-weight: 500; line-height: 1; letter-spacing: 0; }
-.word-meta { position: relative; z-index: 1; display: flex; align-items: center; gap: 8px; color: #59665d; font-size: 13px; }
+.word-display { margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(56px, 8vw, 86px); font-weight: 500; line-height: 1; letter-spacing: 0; }
+.word-meta { display: flex; align-items: center; gap: 8px; color: #59665d; font-size: 13px; }
 .word-meta i { width: 5px; height: 5px; border-radius: 50%; background: var(--coral); }
 .pronunciation { margin-left: 9px; color: #637067; font-family: var(--font-display); font-size: 14px; }
 .card-bottomline { margin-top: auto; padding-top: 25px; border-top: 1px solid #e8e9e2; color: #5f6b62; font-size: 12px; font-weight: 500; letter-spacing: 0; }

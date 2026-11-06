@@ -1,7 +1,7 @@
 "use client";
 
 import { memo, useCallback, useDeferredValue, useEffect, useEffectEvent, useMemo, useRef, useState, useSyncExternalStore } from "react";
-import type { TouchEvent as ReactTouchEvent } from "react";
+import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react";
 import oxfordWordData from "./american-oxford-3000-words.json";
 
 type WordLevel = "A1" | "A2" | "B1" | "B2";
@@ -251,6 +251,11 @@ export default function Home() {
     window.dispatchEvent(new Event(savedWordsEvent));
   }
 
+  function handleStageClick(event: ReactMouseEvent<HTMLDivElement>) {
+    if (!current || (event.target as Element).closest(".card-face, .card-empty")) return;
+    flipCard(!flipped);
+  }
+
   function handleTouchStart(event: ReactTouchEvent<HTMLDivElement>) {
     touchStartX.current = event.touches[0]?.clientX ?? null;
   }
@@ -368,7 +373,9 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="card-stage" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+          {/* Clicks that miss the card faces (the ledge, or the gap while the card is mid-rotation) still flip it.
+              Keyboard users flip via the card buttons and the reveal button. */}
+          <div className="card-stage" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onClick={handleStageClick}>
             <div className="card-shadow card-shadow-back" />
             <div className={`flashcard ${flipped ? "is-flipped" : ""}`}>
               {current ? <>
@@ -394,7 +401,7 @@ export default function Home() {
 
           <div className="study-controls">
             <button className="icon-button" onClick={() => moveCard(-1)} aria-label="Previous word" title="Previous word (left arrow)"><span aria-hidden="true">←</span></button>
-            <button className="reveal-button" onClick={() => current && flipCard(!flipped)} disabled={!current}>{flipped ? "Show word" : "Reveal meaning"}<span aria-hidden="true">↗</span></button>
+            <button className="reveal-button" onClick={() => current && flipCard(!flipped)} disabled={!current}>{flipped ? "Show word" : "Reveal meaning"}<span aria-hidden="true"></span></button>
             <button className="icon-button" onClick={() => moveCard(1)} aria-label="Next word" title="Next word (right arrow)"><span aria-hidden="true">→</span></button>
             <button className={`save-button ${current && saved.includes(current.word) ? "is-saved" : ""}`} onClick={() => current && toggleSaved(current.word)} disabled={!current} aria-label={current && saved.includes(current.word) ? "Remove saved word" : "Save word"} title="Save word"><span aria-hidden="true">{current && saved.includes(current.word) ? "★" : "☆"}</span></button>
           </div>
