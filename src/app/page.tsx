@@ -4,6 +4,8 @@ import { memo, useCallback, useDeferredValue, useEffect, useEffectEvent, useMemo
 import type { MouseEvent as ReactMouseEvent, TouchEvent as ReactTouchEvent } from "react";
 import oxfordWordData from "./american-oxford-3000-words.json";
 import oxfordExtraWordData from "./american-oxford-5000-extra-words.json";
+// Everyday American words that are not on the Oxford lists; shown with a "Supplemental" label.
+import supplementalWordData from "./supplemental-words.json";
 
 type WordLevel = "A1" | "A2" | "B1" | "B2" | "C1";
 type WordSense = { part: string; level: WordLevel };
@@ -15,7 +17,6 @@ type Word = {
   word: string;
   levels: WordLevel[];
   senses: WordSense[];
-  pronunciation?: string;
   /** English meaning; translations for the full list are loaded on demand. */
   meaning: string;
   /** Curated words ship their own translations inline. */
@@ -43,7 +44,7 @@ const curatedWords: CuratedWord[] = [
   { word: "ordinary", level: "A2", part: "adjective", pronunciation: "/\u02c8ɔːdnri/", meaning: { en: "Normal or not especially different.", uk: "Звичайний, нічим особливо не відмінний.", de: "Normal und nicht besonders oder außergewöhnlich." }, example: "It was an ordinary morning until the phone rang." },
   { word: "aware", level: "B1", part: "adjective", pronunciation: "/ə\u02c8weə(r)/", meaning: { en: "Knowing that something exists or is happening.", uk: "Такий, що знає про існування чогось або про те, що відбувається.", de: "Wissen, dass etwas existiert oder geschieht." }, example: "Are you aware of the new library opening hours?" },
   { word: "efficient", level: "B2", part: "adjective", pronunciation: "/ɪ\u02c8fɪʃnt/", meaning: { en: "Working well without wasting time or resources.", uk: "Такий, що працює добре, не марнуючи часу чи ресурсів.", de: "Wirksam, ohne Zeit oder Ressourcen zu verschwenden." }, example: "A clear plan is an efficient way to begin the project." },
-  { word: "journey", level: "A1", part: "noun", pronunciation: "/\u02c8dʒɜːni/", meaning: { en: "The act of travelling from one place to another.", uk: "Подорож з одного місця до іншого.", de: "Eine Reise von einem Ort zu einem anderen." }, example: "The train journey through the hills took two hours." },
+  { word: "journey", level: "A1", part: "noun", pronunciation: "/\u02c8dʒɜːni/", meaning: { en: "The act of traveling from one place to another.", uk: "Подорож з одного місця до іншого.", de: "Eine Reise von einem Ort zu einem anderen." }, example: "The train journey through the hills took two hours." },
   { word: "improve", level: "A1", part: "verb", pronunciation: "/ɪm\u02c8pruːv/", meaning: { en: "To become better, or to make something better.", uk: "Ставати кращим або робити щось кращим.", de: "Besser werden oder etwas besser machen." }, example: "She listens to podcasts to improve her English." },
   { word: "consider", level: "A2", part: "verb", pronunciation: "/kən\u02c8sɪdə(r)/", meaning: { en: "To think carefully about something before deciding.", uk: "Ретельно обмірковувати щось перед ухваленням рішення.", de: "Etwas sorgfältig durchdenken, bevor man sich entscheidet." }, example: "We should consider every option before we choose." },
   { word: "evidence", level: "A2", part: "noun", pronunciation: "/\u02c8evɪdəns/", meaning: { en: "Facts or information that show whether something is true.", uk: "Факти або інформація, що підтверджують правдивість чогось.", de: "Tatsachen oder Informationen, die zeigen, ob etwas wahr ist." }, example: "The report includes evidence from several studies." },
@@ -52,7 +53,7 @@ const curatedWords: CuratedWord[] = [
   { word: "environment", level: "A2", part: "noun", pronunciation: "/ɪn\u02c8vaɪrənmənt/", meaning: { en: "The natural world, or the conditions around someone.", uk: "Природний світ або умови, що оточують когось.", de: "Die natürliche Welt oder die Bedingungen, die jemanden umgeben." }, example: "Small choices can have an impact on the environment." },
   { word: "significant", level: "B2", part: "adjective", pronunciation: "/sɪɡ\u02c8nɪfɪkənt/", meaning: { en: "Large or important enough to be noticed.", uk: "Достатньо великий або важливий, щоб його помітили.", de: "Groß oder wichtig genug, um bemerkt zu werden." }, example: "The study found a significant change in reading habits." },
   { word: "support", level: "A2", part: "verb", pronunciation: "/sə\u02c8pɔːt/", meaning: { en: "To help or encourage someone or something.", uk: "Допомагати комусь або чомусь чи заохочувати їх.", de: "Jemandem oder etwas helfen oder Mut machen." }, example: "Good feedback can support learners as they grow." },
-  { word: "opportunity", level: "A2", part: "noun", pronunciation: "/ˌɒpə\u02c8tjuːnəti/", meaning: { en: "A situation that makes it possible to do something.", uk: "Ситуація, що дає змогу щось зробити.", de: "Eine Situation, die es ermöglicht, etwas zu tun." }, example: "The exchange programme was a great opportunity to travel." },
+  { word: "opportunity", level: "A2", part: "noun", pronunciation: "/ˌɒpə\u02c8tjuːnəti/", meaning: { en: "A situation that makes it possible to do something.", uk: "Ситуація, що дає змогу щось зробити.", de: "Eine Situation, die es ermöglicht, etwas zu tun." }, example: "The exchange program was a great opportunity to travel." },
 ];
 
 const meaningLanguageNames: Record<MeaningLanguage, string> = {
@@ -68,22 +69,56 @@ const translationLoaders: Record<TranslationLanguage, () => Promise<Translations
 };
 // Example sentences for the full list (~49 KB gzipped) are also split out and fetched after first render.
 const loadExamples = () => import("./examples-en.json").then((module) => module.default as Record<string, string>);
+// American IPA for every word, written for this app (loaded after first render, like the example sentences).
+const loadPronunciations = () => import("./pronunciations-us.json").then((module) => module.default as Record<string, string>);
 
-type OxfordWordRecord = { word: string; levels: string[]; senses: { part: string; level: string }[]; meaning: string };
-const curatedByWord = new Map(curatedWords.map(({ word, level, part, pronunciation, meaning, example }) => [
+// Headwords carry list markers ("bank (money)", "lead1", "a, an"); speak only the word itself.
+function spokenForm(word: string) {
+  return word.replace(/\s*\(.*?\)/g, "").replace(/\s*\d+$/, "").replace(/\s+\d+\b/, "").trim();
+}
+
+// "match (contest/correspond)" -> big "match" with a small "(contest/correspond)" note under it.
+function headwordParts(word: string) {
+  const match = word.match(/^(.*?)\s*(\(.*\))$/);
+  return match ? { main: match[1], note: match[2] } : { main: word, note: "" };
+}
+
+function subscribeToNothing() {
+  return () => {};
+}
+
+function speakAmerican(text: string) {
+  const synth = window.speechSynthesis;
+  synth.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "en-US";
+  utterance.rate = 0.9;
+  // Prefer a real en-US voice; the list can be empty until the browser has loaded its voices.
+  const voices = synth.getVoices().filter((voice) => voice.lang.replace("_", "-") === "en-US");
+  utterance.voice = voices.find((voice) => voice.localService) ?? voices[0] ?? null;
+  synth.speak(utterance);
+}
+
+type OxfordWordRecord = { word: string; levels: string[]; senses: { part: string; level: string }[]; meaning: string; supplemental?: boolean };
+// Curated entries keep their own (British) IPA in the source data, but the card shows the American IPA file instead.
+const curatedByWord = new Map(curatedWords.map(({ word, level, part, meaning, example }) => [
   word.toLocaleLowerCase("en-US"),
-  { level, part, pronunciation, meaning, example },
+  { level, part, meaning, example },
 ]));
-const words: Word[] = [...oxfordWordData, ...oxfordExtraWordData].map((sourceWord: OxfordWordRecord) => {
+const words: Word[] = [
+  ...oxfordWordData,
+  ...oxfordExtraWordData,
+  ...supplementalWordData.map((record) => ({ ...record, supplemental: true })),
+].map((sourceWord: OxfordWordRecord) => {
   const curated = curatedByWord.get(sourceWord.word.toLocaleLowerCase("en-US"));
   return {
     word: sourceWord.word,
     levels: sourceWord.levels as WordLevel[],
     senses: sourceWord.senses.map((sense) => ({ part: sense.part, level: sense.level as WordLevel })),
-    pronunciation: curated?.pronunciation,
     meaning: curated?.meaning.en ?? sourceWord.meaning,
     translations: curated && { uk: curated.meaning.uk, de: curated.meaning.de },
     example: curated?.example,
+    supplemental: sourceWord.supplemental,
   };
 });
 const officialHeadwords = new Set(words.map((item) => item.word.toLocaleLowerCase("en-US")));
@@ -93,7 +128,6 @@ for (const curated of curatedWords) {
     word: curated.word,
     levels: [curated.level],
     senses: [{ part: curated.part, level: curated.level }],
-    pronunciation: curated.pronunciation,
     meaning: curated.meaning.en,
     translations: { uk: curated.meaning.uk, de: curated.meaning.de },
     example: curated.example,
@@ -230,6 +264,12 @@ export default function Home() {
   const [meaningLanguage, setMeaningLanguage] = useState<MeaningLanguage>("en");
   const [loadedTranslations, setLoadedTranslations] = useState<Partial<Record<TranslationLanguage, Translations>>>({});
   const [examples, setExamples] = useState<Record<string, string>>({});
+  const [pronunciations, setPronunciations] = useState<Record<string, string>>({});
+  const [examplesLoaded, setExamplesLoaded] = useState(false);
+  const [pendingLanguage, setPendingLanguage] = useState<TranslationLanguage | null>(null);
+  // The language the learner asked for most recently; a slower earlier request must not win.
+  const requestedLanguage = useRef<MeaningLanguage>("en");
+  const canSpeak = useSyncExternalStore(subscribeToNothing, () => "speechSynthesis" in window, () => false);
   const savedSnapshot = useSyncExternalStore(subscribeToSavedWords, getSavedWordsSnapshot, getServerSavedWordsSnapshot);
   const saved = useMemo(() => JSON.parse(savedSnapshot) as string[], [savedSnapshot]);
   const [showSaved, setShowSaved] = useState(false);
@@ -254,17 +294,51 @@ export default function Home() {
   const activeMeaningLanguage: MeaningLanguage = translatedMeaning ? meaningLanguage : "en";
   const meaningText = translatedMeaning ?? current?.meaning;
   const exampleText = current && (current.example ?? examples[current.word]);
+  const pronunciation = current && pronunciations[current.word];
 
   useEffect(() => {
-    loadExamples().then(setExamples, () => {});
+    // Not needed for first paint, so wait for idle time; but the first touch, click or key press is a strong
+    // hint the learner is about to flip, so start right away then. import() caches, so this runs only once.
+    let started = false;
+    const interactionEvents = ["pointerdown", "keydown", "touchstart"] as const;
+    const load = () => {
+      if (started) return;
+      started = true;
+      interactionEvents.forEach((type) => window.removeEventListener(type, load));
+      loadPronunciations().then(setPronunciations, () => {});
+      loadExamples().then((loaded) => { setExamples(loaded); setExamplesLoaded(true); }, () => setExamplesLoaded(true));
+    };
+    interactionEvents.forEach((type) => window.addEventListener(type, load, { once: true, passive: true }));
+    // Safari has no requestIdleCallback.
+    const hasIdle = "requestIdleCallback" in window;
+    const idleId = hasIdle ? window.requestIdleCallback(load, { timeout: 2000 }) : 0;
+    const timer = hasIdle ? undefined : setTimeout(load, 300);
+    return () => {
+      if (hasIdle) window.cancelIdleCallback(idleId);
+      clearTimeout(timer);
+      interactionEvents.forEach((type) => window.removeEventListener(type, load));
+    };
   }, []);
 
   function chooseMeaningLanguage(language: MeaningLanguage) {
-    setMeaningLanguage(language);
-    if (language === "en" || loadedTranslations[language]) return;
+    requestedLanguage.current = language;
+    if (language === "en" || loadedTranslations[language]) {
+      setPendingLanguage(null);
+      setMeaningLanguage(language);
+      return;
+    }
+    // Swap only once the translation has arrived, so the card never flashes English in between.
+    setPendingLanguage(language);
     translationLoaders[language]().then(
-      (translations) => setLoadedTranslations((loaded) => ({ ...loaded, [language]: translations })),
-      () => setMeaningLanguage((selected) => (selected === language ? "en" : selected)),
+      (translations) => {
+        setLoadedTranslations((loaded) => ({ ...loaded, [language]: translations }));
+        if (requestedLanguage.current !== language) return;
+        setPendingLanguage(null);
+        setMeaningLanguage(language);
+      },
+      () => {
+        if (requestedLanguage.current === language) setPendingLanguage(null);
+      },
     );
   }
 
@@ -272,6 +346,10 @@ export default function Home() {
     setIndex(itemIndex);
     setFlipped(false);
   }, []);
+
+  function speakCurrent() {
+    if (current && canSpeak) speakAmerican(spokenForm(current.word));
+  }
 
   function flipCard(showMeaning: boolean) {
     setFlipped(showMeaning);
@@ -324,6 +402,8 @@ export default function Home() {
     } else if (event.key === "ArrowUp" || event.key === "ArrowDown" || event.code === "Space") {
       event.preventDefault();
       flipCard(!flipped);
+    } else if ((event.key === "p" || event.key === "P") && !event.metaKey && !event.ctrlKey && !event.altKey) {
+      speakCurrent();
     }
   });
 
@@ -352,9 +432,12 @@ export default function Home() {
                 lang={language}
                 aria-label={`Show meaning in ${meaningLanguageNames[language]}`}
                 aria-pressed={meaningLanguage === language}
+                aria-busy={pendingLanguage === language || undefined}
+                className={pendingLanguage === language ? "is-loading" : undefined}
                 title={`Show meaning in ${meaningLanguageNames[language]}`}
-                // Warm the translation chunk on hover; import() caches, so the click reuses it.
+                // Warm the translation chunk on hover/focus; import() caches, so the click reuses it.
                 onPointerEnter={language === "en" ? undefined : () => void translationLoaders[language]().catch(() => {})}
+                onFocus={language === "en" ? undefined : () => void translationLoaders[language]().catch(() => {})}
                 onClick={() => chooseMeaningLanguage(language)}
               >
                 {language.toUpperCase()}
@@ -427,8 +510,8 @@ export default function Home() {
               {current ? <>
                 <button className="card-face card-front" onClick={() => flipCard(true)} aria-label={`Reveal meaning of ${current.word}`}>
                   <span className="card-topline"><span>{current.supplemental ? "SUPPLEMENTAL WORD" : `WORD № ${String(wordNumbers.get(current)).padStart(4, "0")}`}</span><span className={`level-tag level-${current.levels[0].toLowerCase()}`}>{current.levels.join(" / ")}</span></span>
-                  <span className="word-display">{current.word}</span>
-                  <span className="word-meta"><i /> {Array.from(new Set(current.senses.map((sense) => sense.part))).join(", ")} {current.pronunciation && <span className="pronunciation">{current.pronunciation}</span>}</span>
+                  <span className="word-display">{headwordParts(current.word).main}{headwordParts(current.word).note && <small className="word-note">{headwordParts(current.word).note}</small>}</span>
+                  <span className="word-meta"><i /> {Array.from(new Set(current.senses.map((sense) => sense.part))).join(", ")} {pronunciation && <span className="pronunciation" title="American pronunciation">{pronunciation}</span>}</span>
                   <span className="card-bottomline"><span>Take a guess, then turn the card</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                   <span className="card-ornament" aria-hidden="true"></span>
                 </button>
@@ -438,7 +521,9 @@ export default function Home() {
                   <span className="meaning-text" lang={activeMeaningLanguage}>
                     {meaningText}
                   </span>
-                  {exampleText && <span className="example-block"><span>IN A SENTENCE</span><span>“{exampleText}”</span></span>}
+                  {exampleText
+                    ? <span className="example-block"><span>IN A SENTENCE</span><span className="example-text">“{exampleText}”</span></span>
+                    : !examplesLoaded && <span className="example-block is-loading" aria-hidden="true"><span>IN A SENTENCE</span><span className="example-skeleton"><i /><i /></span></span>}
                   <span className="card-bottomline"><span>Turn back to the word</span><span className="turn-icon" aria-hidden="true">↻</span></span>
                 </button>
               </> : <div className="card-empty"><span>✳</span><p>{showSaved ? "Save a word to start your collection." : "No words in this view."}</p><button onClick={() => { setShowSaved(false); setQuery(""); setLevel("All"); setPart("All"); }}>Back to the deck</button></div>}
@@ -449,10 +534,11 @@ export default function Home() {
             <button className="icon-button" onClick={() => moveCard(-1)} aria-label="Previous word" title="Previous word (left arrow)"><span aria-hidden="true">←</span></button>
             <button className="reveal-button" onClick={() => current && flipCard(!flipped)} disabled={!current}>{flipped ? "Show word" : "Reveal meaning"}<span aria-hidden="true"></span></button>
             <button className="icon-button" onClick={() => moveCard(1)} aria-label="Next word" title="Next word (right arrow)"><span aria-hidden="true">→</span></button>
+            {canSpeak && <button className="speak-button" onClick={speakCurrent} disabled={!current} aria-label={current ? `Hear ${spokenForm(current.word)} in American English` : "Hear the word"} title="Hear American pronunciation (P)"><svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" /><path d="M15.5 9a4 4 0 0 1 0 6" /><path d="M18.5 6.5a7.5 7.5 0 0 1 0 11" /></svg></button>}
             {/* <button className={`save-button ${current && saved.includes(current.word) ? "is-saved" : ""}`} onClick={() => current && toggleSaved(current.word)} disabled={!current} aria-label={current && saved.includes(current.word) ? "Remove saved word" : "Save word"} title="Save word"><span aria-hidden="true">{current && saved.includes(current.word) ? "★" : "☆"}</span></button> */}
           </div>
 
-          <div className="keyboard-hint desktop-hint"><span>←</span><span>→</span> browse <b>·</b> <span>↑</span><span>↓</span> flip <b>·</b> <kbd>space</kbd> flip</div>
+          <div className="keyboard-hint desktop-hint"><span>←</span><span>→</span> browse <b>·</b> <span>↑</span><span>↓</span> flip <b>·</b> <kbd>space</kbd> flip{canSpeak && <> <b>·</b> <kbd>P</kbd> listen</>}</div>
           <div className="keyboard-hint mobile-hint">Swipe to browse <b>·</b> Tap a card to flip</div>
         </section>
       </section>

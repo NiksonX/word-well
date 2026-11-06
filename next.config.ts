@@ -6,6 +6,10 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
+  experimental: {
+    // ~8 KB gzipped of CSS for a single page: inlining removes the render-blocking request.
+    inlineCss: true,
+  },
   turbopack: {
     rules: {
       "*.css": {

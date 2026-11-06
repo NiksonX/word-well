@@ -65,12 +65,12 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .word-row:hover { background: #ebece6; }
 .word-row.selected { border-bottom-color: transparent; border-radius: 5px; background: #e7ece5; }
 .word-row-name { min-width: 0; overflow: hidden; font-size: 0.875rem; font-weight: 630; text-overflow: ellipsis; white-space: nowrap; }
-.word-row-name small { display: block; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; color: #68756c; font-size: 0.6875rem; font-weight: 450; }
+.word-row-name small { display: block; overflow: hidden; text-overflow: ellipsis; margin-top: 3px; color: #5a675e; font-size: 0.6875rem; font-weight: 450; }
 .row-level, .level-tag { display: inline-grid; place-items: center; min-width: 32px; padding: 5px 7px; border-radius: 3px; font-size: 0.625rem; font-weight: 750; }
 .level-a1 { color: #35654f; background: #e3eee2; }
 .level-a2 { color: #49675f; background: #e6eeea; }
-.level-b1 { color: #856638; background: #f5edd5; }
-.level-b2 { color: #9b5849; background: #f4e3de; }
+.level-b1 { color: #765a2f; background: #f5edd5; }
+.level-b2 { color: #8a4a3c; background: #f4e3de; }
 .level-c1 { color: #6b4f86; background: #ece4f3; }
 .empty-list { padding: 14px 8px; color: var(--muted); font-size: 0.8125rem; line-height: 1.6; }
 .oxford-card-link { display: flex; align-items: center; gap: 10px; margin-top: 20px; padding: 13px 10px; border: 1px solid #e2e5df; border-radius: 6px; color: inherit; text-decoration: none; background: rgba(250, 250, 247, .7); transition: border-color 150ms ease, transform 150ms ease; }
@@ -100,22 +100,32 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .card-front { transform: rotateY(0deg); background: #fffef9; }
 .card-back { transform: rotateY(180deg); background: #e7eee6; }
 .language-toggle { display: flex; flex: 0 0 auto; gap: 1px; padding: 3px; border: 1px solid #cbd7ce; border-radius: 4px; background: #f7f8f3; }
-.language-toggle button { min-width: 30px; height: 26px; padding: 0 6px; border: 0; border-radius: 2px; background: transparent; color: #78877d; font-size: 0.625rem; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; }
+.language-toggle button { min-width: 30px; height: 26px; padding: 0 6px; border: 0; border-radius: 2px; background: transparent; color: #5a675e; font-size: 0.625rem; font-weight: 700; cursor: pointer; transition: background 150ms ease, color 150ms ease; }
 .language-toggle button[aria-pressed="true"] { background: var(--green); color: #fffef7; }
 .language-toggle button:not([aria-pressed="true"]):hover { background: #e7eee6; color: var(--green); }
 .language-toggle button:disabled { color: #a5ada6; cursor: not-allowed; }
-.card-topline, .card-bottomline { display: flex; align-items: center; justify-content: space-between; color: #657168; font-size: 0.6875rem; font-weight: 700; letter-spacing: 1px; }
+.card-topline, .card-bottomline { display: flex; align-items: center; justify-content: space-between; color: #56635a; font-size: 0.6875rem; font-weight: 700; letter-spacing: 1px; }
 .card-topline .level-tag { letter-spacing: 0; }
-.word-display { margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 4.3rem); font-weight: 500; line-height: 1; letter-spacing: 0; }
+.word-display { margin: auto 0 10px; font-family: var(--font-display); font-size: clamp(3.5rem, 8vw, 4.3rem); font-weight: 500; line-height: 1; letter-spacing: 0; overflow-wrap: break-word; }
+.word-note { display: block; margin-top: 8px; color: #637067; font-family: var(--font-body); font-size: 1rem; font-weight: 500; line-height: 1.3; }
 .word-meta { display: flex; align-items: center; gap: 8px; color: #59665d; font-size: 0.8125rem; }
 .word-meta i { width: 5px; height: 5px; border-radius: 50%; background: var(--coral); }
-.pronunciation { margin-left: 9px; color: #637067; font-family: var(--font-display); font-size: 0.875rem; }
+.pronunciation { margin-left: 9px; color: #637067; font-family: var(--font-display); font-size: 1rem; }
 .card-bottomline { margin-top: auto; padding-top: 25px; border-top: 1px solid #e8e9e2; color: #5f6b62; font-size: 0.75rem; font-weight: 500; letter-spacing: 0; }
 .turn-icon { color: var(--green); font-size: 1.25rem; }
 /* .card-ornament { position: absolute; right: 29px; bottom: 83px; color: #f1d86d; font-size: 6.5rem; line-height: 1; transform: rotate(-12deg); opacity: .8; } */
 .meaning-label { margin-top: 24px; color: var(--green); font-family: var(--font-display); font-size: 2.75rem; font-style: italic; line-height: 1.15; }
 .meaning-text { max-width: 420px; margin-top: 12px; font-family: var(--font-display); font-size: 1.875rem; line-height: 1.25; }
 .example-block { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: 16px 18px; border-left: 2px solid var(--coral); background: #f7f8f3; color: #334139; font-family: var(--font-display); font-size: 1.375rem; font-style: italic; line-height: 1.45; }
+/* Until example sentences arrive, keep the block's footprint (two text lines) so nothing jumps; then fade the text in. */
+.example-skeleton { display: flex; flex-direction: column; justify-content: center; gap: .45em; height: 2.9em; }
+.example-skeleton i { display: block; height: .7em; border-radius: 3px; background: linear-gradient(90deg, #e9ece5 0%, #f3f5ef 50%, #e9ece5 100%); background-size: 200% 100%; animation: skeleton-shimmer 1.2s ease-in-out infinite; }
+.example-skeleton i:last-child { width: 62%; }
+.example-text { animation: example-in 220ms ease-out; }
+@keyframes skeleton-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
+@keyframes example-in { from { opacity: 0; } to { opacity: 1; } }
+.language-toggle button.is-loading { animation: lang-pending 900ms ease-in-out infinite; }
+@keyframes lang-pending { 50% { background: #e7eee6; } }
 .example-block span:first-child { color: #68756c; font-family: var(--font-body); font-size: 0.75rem; font-style: normal; font-weight: 750; letter-spacing: 1px; }
 .card-back .card-bottomline { border-color: #d7e0d6; }
 /* The back stacks word, meaning and example; tighten it to the card's own height so nothing spills out. */
@@ -136,13 +146,13 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .card-empty p { max-width: 250px; margin: 0; text-align: center; font-family: var(--font-display); font-size: 1.4375rem; }
 .card-empty button { border: 0; border-bottom: 1px solid var(--green); padding: 4px 0; background: transparent; color: var(--green); font-size: 0.6875rem; cursor: pointer; }
 .study-controls { display: flex; align-items: center; gap: 15px; margin-top: 26px; }
-.icon-button, .save-button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #dfe3dd; border-radius: 50%; background: #fafaf7; color: #42534a; font-size: 1.1875rem; cursor: pointer; transition: background 150ms ease, transform 150ms ease; }
-.icon-button:hover, .save-button:hover { transform: translateY(-2px); background: white; }
+.icon-button, .save-button, .speak-button { width: 44px; height: 44px; display: grid; place-items: center; border: 1px solid #dfe3dd; border-radius: 50%; background: #fafaf7; color: #42534a; font-size: 1.1875rem; cursor: pointer; transition: background 150ms ease, transform 150ms ease; }
+.icon-button:hover, .save-button:hover, .speak-button:hover { transform: translateY(-2px); background: white; }
 .save-button { font-size: 1.3125rem; }
 .reveal-button { min-width: 160px; height: 48px; display: flex; align-items: center; justify-content: center; gap: 11px; padding: 0 18px; border: 0; border-radius: 5px; background: var(--green); color: #fffef7; font-size: 0.875rem; font-weight: 650; cursor: pointer; transition: background 150ms ease, transform 150ms ease; }
 .reveal-button:hover { transform: translateY(-2px); background: #194b3d; }
 .reveal-button span { font-size: 0.875rem; }
-.reveal-button:disabled, .save-button:disabled { opacity: .45; cursor: not-allowed; }
+.reveal-button:disabled, .save-button:disabled, .speak-button:disabled { opacity: .45; cursor: not-allowed; }
 .keyboard-hint { display: flex; align-items: center; gap: 6px; margin-top: 22px; color: #68756c; font-size: 0.625rem; }
 .mobile-hint { display: none; }
 .keyboard-hint > span { width: 20px; height: 20px; display: grid; place-items: center; border: 1px solid #d5dbd3; border-radius: 3px; background: rgba(250, 250, 247, .8); color: #526057; font-size: 0.8125rem; }
@@ -153,7 +163,8 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .footer-meta { display: flex; align-items: center; gap: 4px; }
 .contact-link { width: 32px; height: 32px; display: grid; place-items: center; margin-left: 0; border-radius: 50%; color: var(--green); transition: background 150ms ease, color 150ms ease; }
 .contact-link:hover { background: #e7eee6; color: #194b3d; }
-@keyframes card-arrive { from { opacity: 0; transform: translateY(14px) rotate(.6deg); } to { opacity: 1; transform: translateY(0) rotate(0); } }
+/* Motion only: starting at opacity 0 would hide the card text from LCP until the animation ends. */
+@keyframes card-arrive { from { transform: translateY(14px) rotate(.6deg); } to { transform: translateY(0) rotate(0); } }
 
 @media (max-width: 760px) {
   .topbar { height: 62px; }
@@ -178,8 +189,9 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
   .meaning-text { font-size: 1.625rem; }
   .example-block { font-size: 1.375rem; }
   .study-controls { width: min(100%, 400px); gap: 8px; }
-  .icon-button, .save-button { width: 48px; height: 48px; flex: 0 0 48px; }
+  .icon-button, .save-button, .speak-button { width: 48px; height: 48px; flex: 0 0 48px; }
   .icon-button { width: 64px; flex: 0 0 64px; border-radius: 5px; font-size: 1.5rem; }
+  .speak-button { width: 56px; flex: 0 0 56px; border-radius: 5px; }
   .reveal-button { min-width: 0; height: 48px; flex: 1; }
   .desktop-hint { display: none; }
   .mobile-hint { display: flex; justify-content: center; font-size: 0.8125rem; }
@@ -211,6 +223,9 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
   .example-block { gap: 6px; padding: 12px 14px; font-size: 1.25rem; line-height: 1.35; }
   .card-bottomline { padding-top: 18px; }
   .word-display { font-size: 2.5rem; }
+  .study-controls { gap: 6px; }
+  .icon-button, .speak-button { width: 44px; flex: 0 0 44px; }
+  .reveal-button { padding: 0 6px; white-space: nowrap; }
 }
 @media (min-width: 761px) and (max-height: 850px) {
   .workspace { padding-top: 28px; padding-bottom: 18px; }
