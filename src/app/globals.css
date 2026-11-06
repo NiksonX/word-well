@@ -110,29 +110,24 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 .card-bottomline { margin-top: auto; padding-top: 25px; border-top: 1px solid #e8e9e2; color: #5f6b62; font-size: 0.75rem; font-weight: 500; letter-spacing: 0; }
 .turn-icon { color: var(--green); font-size: 1.25rem; }
 /* .card-ornament { position: absolute; right: 29px; bottom: 83px; color: #f1d86d; font-size: 6.5rem; line-height: 1; transform: rotate(-12deg); opacity: .8; } */
-.meaning-label { margin-top: 45px; color: var(--green); font-family: var(--font-display); font-size: 1.875rem; font-style: italic; }
+.meaning-label { margin-top: 24px; color: var(--green); font-family: var(--font-display); font-size: 2.25rem; font-style: italic; line-height: 1.15; }
 .meaning-text { max-width: 420px; margin-top: 12px; font-family: var(--font-display); font-size: 1.875rem; line-height: 1.25; }
-.example-block { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: 16px 18px; border-left: 2px solid var(--coral); background: #f7f8f3; color: #334139; font-family: var(--font-display); font-size: 1.0625rem; font-style: italic; line-height: 1.45; }
-.example-block span:first-child { color: #68756c; font-family: var(--font-body); font-size: 0.625rem; font-style: normal; font-weight: 750; letter-spacing: 1px; }
+.example-block { display: flex; flex-direction: column; gap: 8px; margin-top: auto; padding: 16px 18px; border-left: 2px solid var(--coral); background: #f7f8f3; color: #334139; font-family: var(--font-display); font-size: 1.375rem; font-style: italic; line-height: 1.45; }
+.example-block span:first-child { color: #68756c; font-family: var(--font-body); font-size: 0.75rem; font-style: normal; font-weight: 750; letter-spacing: 1px; }
 .card-back .card-bottomline { border-color: #d7e0d6; }
 /* The back stacks word, meaning and example; tighten it to the card's own height so nothing spills out. */
 .card-stage { container-type: size; container-name: card; }
-.card-back:has(.example-block) .meaning-label { margin-top: clamp(12px, 6cqh, 45px); }
+.card-back:has(.example-block) .meaning-label { margin-top: clamp(12px, 6cqh, 24px); }
 @container card (max-height: 28.75rem) {
   .card-back:has(.example-block) .card-bottomline { display: none; }
   .card-back:has(.example-block) .meaning-text { margin-bottom: 14px; }
 }
+/* Short cards only tighten spacing; text keeps its normal size. */
 @container card (max-height: 25rem) {
   .card-back:has(.example-block) { padding-top: 24px; padding-bottom: 24px; }
-  .card-back:has(.example-block) .meaning-label { font-size: 1.625rem; line-height: 1.15; }
-  .card-back:has(.example-block) .meaning-text { margin-top: 6px; font-size: 1.5rem; line-height: 1.2; }
-  .card-back:has(.example-block) .example-block { gap: 5px; padding: 11px 14px; font-size: 1.125rem; line-height: 1.3; }
-}
-@container card (max-height: 20.625rem) {
-  .card-back:has(.example-block) { padding-top: 18px; padding-bottom: 18px; }
-  .card-back:has(.example-block) .meaning-label { font-size: 1.4375rem; }
-  .card-back:has(.example-block) .meaning-text { font-size: 1.3125rem; }
-  .card-back:has(.example-block) .example-block { padding: 9px 12px; font-size: 1.0625rem; line-height: 1.25; }
+  .card-back:has(.example-block) .meaning-label { line-height: 1.15; }
+  .card-back:has(.example-block) .meaning-text { margin-top: 6px; line-height: 1.2; }
+  .card-back:has(.example-block) .example-block { gap: 5px; padding: 11px 14px; line-height: 1.35; }
 }
 .card-empty { flex: 1; display: grid; place-content: center; justify-items: center; gap: 14px; color: #738076; }
 .card-empty > span { color: var(--coral); font-size: 2.25rem; }
@@ -174,11 +169,12 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
   .progress-wrap { min-width: 72px; }
   .level-chip { min-width: 44px; height: 44px; font-size: 0.8125rem; }
   .saved-filter { width: 44px; height: 44px; }
-  .card-stage { height: clamp(25.5rem, 60svh, 34rem); touch-action: pan-y; }
+  .card-stage { height: clamp(26.5rem, 60svh, 34rem); touch-action: pan-y; }
   .card-topline, .example-block span:first-child, .level-tag, .row-level, .eyebrow, .list-toolbar, .page-footer, .page-footer span:last-child, .language-toggle button { font-size: 0.75rem; }
   .word-meta, .card-bottomline { font-size: 0.875rem; }
+  .meaning-label { font-size: 2rem; }
   .meaning-text { font-size: 1.625rem; }
-  .example-block { font-size: 1.1875rem; }
+  .example-block { font-size: 1.375rem; }
   .study-controls { width: min(100%, 400px); gap: 8px; }
   .icon-button, .save-button { width: 48px; height: 48px; flex: 0 0 48px; }
   .icon-button { width: 64px; flex: 0 0 64px; border-radius: 5px; font-size: 1.5rem; }
@@ -196,7 +192,7 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
   .card-face { padding: 23px; }
   .word-display { font-size: 3rem; }
   .meaning-text { font-size: 1.4375rem; }
-  .example-block { font-size: 1.125rem; }
+  .example-block { font-size: 1.3125rem; }
   .study-controls { gap: 10px; }
   .reveal-button { min-width: 0; padding: 0 12px; }
   .icon-button { width: 56px; flex: 0 0 56px; }
@@ -208,19 +204,18 @@ button:focus-visible, a:focus-visible, .search-box:focus-within { outline: 2px s
 @media (max-width: 360px) {
   .study-heading h2 { font-size: 1.6875rem; }
   .card-face { padding: 18px; }
-  .meaning-label { margin-top: 18px; font-size: 1.625rem; }
+  .meaning-label { margin-top: 18px; font-size: 1.875rem; }
   .meaning-text { margin-top: 8px; font-size: 1.375rem; line-height: 1.2; }
-  .example-block { gap: 6px; padding: 12px 14px; font-size: 1.0625rem; line-height: 1.35; }
+  .example-block { gap: 6px; padding: 12px 14px; font-size: 1.25rem; line-height: 1.35; }
   .card-bottomline { padding-top: 18px; }
   .word-display { font-size: 2.5rem; }
 }
-  .meaning-label { margin-top: 24px; color: var(--green); font-family: var(--font-display); font-size: 1.75rem; font-style: italic; }
 @media (min-width: 761px) and (max-height: 850px) {
   .workspace { padding-top: 28px; padding-bottom: 18px; }
   .deck-sidebar { min-height: 0; }
   .word-list { max-height: min(280px, calc(100svh - 500px)); }
   .study-heading { margin-top: 0; margin-bottom: 20px; }
-  .card-stage { height: clamp(300px, calc(100svh - 440px), 390px); }
+  .card-stage { height: clamp(22rem, calc(100svh - 440px), 24.375rem); }
   .study-controls { margin-top: 18px; }
   .keyboard-hint { margin-top: 14px; }
 }
