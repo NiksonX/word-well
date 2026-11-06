@@ -168,6 +168,7 @@ function WordList({ deck, currentIndex, onSelect, resetKey }: {
 
 const levels = ["All", "A1", "A2", "B1", "B2"] as const;
 type LevelFilter = "All" | WordLevel;
+// const contactEmail = "mock@mail.com";
 const savedWordsKey = "wordwell-saved";
 const savedWordsEvent = "wordwell:saved-words";
 
@@ -410,7 +411,11 @@ export default function Home() {
           <div className="keyboard-hint mobile-hint">Swipe to browse <b>·</b> Tap a card to flip</div>
         </section>
       </section>
-      <footer className="page-footer"><span>ONE WORD AT A TIME</span><span>Built for curious minds <i></i></span></footer>
+      <footer className="page-footer"><span>ONE WORD AT A TIME</span><span className="footer-meta">Built for Anastasiia 😎 <i></i>
+        {/* <a className="contact-link" href={`mailto:${contactEmail}`} aria-label={`Email ${contactEmail}`} title={contactEmail}>
+          <svg aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 6.5 8.5 6.5 8.5-6.5" /></svg>
+        </a> */}
+      </span></footer>
     </main>
   );
 }
